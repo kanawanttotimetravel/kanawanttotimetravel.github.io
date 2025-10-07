@@ -1,0 +1,207 @@
+
+@mixin base-box {
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  padding: 0.6rem 1rem;
+  position: relative;
+  color: var(--text-color);
+  box-shadow: var(--language-border-color) 1px 1px 2px 1px;
+  overflow: hidden;
+
+  > p:first-child {
+    margin-top: 0;
+  }
+  > p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   * Unified Title Mixin – consistent header styling for all box types
+   * -------------------------------------------------------------------------- */
+@mixin box-title(
+  $accent-color,
+  $bg-color,
+  $icon-content,
+  $fa-style: 'solid',
+  $has-border: false
+) {
+  .title {
+    background: $bg-color;
+    color: $accent-color;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 1rem;
+    margin: -0.6rem -1rem 0.6rem -1rem;
+    line-height: 1.15;
+
+    @if $has-border {
+      border-bottom: 1px solid rgba($accent-color, 0.15);
+    }
+
+    > p {
+      margin: 0;
+    }
+
+    &::before {
+      content: $icon-content;
+      font: var(--fa-font-#{$fa-style});
+      color: $accent-color;
+      line-height: 1;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      flex-shrink: 0; // Prevent icon from shrinking
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   * Standard Box Mixin – for info / tip / warning / danger (unified with math)
+   * -------------------------------------------------------------------------- */
+@mixin standard-box(
+  $border-color,
+  $accent-color,
+  $icon-content,
+  $bg-color,
+  $fa-style: 'solid'
+) {
+  @include base-box;
+  @include box-title($accent-color, $bg-color, $icon-content, $fa-style);
+
+  border-left: 0.2rem solid $border-color;
+}
+
+/* --------------------------------------------------------------------------
+   * Math Box Mixin – for definition / lemma / proposition / theorem / example
+   * -------------------------------------------------------------------------- */
+@mixin math-box(
+  $border,
+  $accent,
+  $bg,
+  $icon,
+  $default-title: null,
+  $fa-style: 'solid'
+) {
+  @include base-box;
+  @include box-title($accent, $bg, $icon, $fa-style, true);
+
+  border-left: 0.25rem solid $border;
+  background: $bg;
+
+  // Auto-title functionality for math boxes without explicit titles
+  @if $default-title {
+    &:not(:has(> .title)) {
+      padding-top: 2rem;
+
+      &::before {
+        content: $icon;
+        font: var(--fa-font-#{$fa-style});
+        position: absolute;
+        top: 0.7rem;
+        left: 1rem;
+        color: $accent;
+        line-height: 1;
+      }
+      &::after {
+        content: $default-title;
+        font-weight: 600;
+        position: absolute;
+        top: 0.7rem;
+        left: 2.5rem;
+        color: $accent;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   * Details Box Mixin – click‑to‑reveal blocks
+   * -------------------------------------------------------------------------- */
+@mixin details-box(
+  $border-color,
+  $accent-color,
+  $bg-color,
+  $icon-closed: '\f02e',
+  /* fa-book      */ $icon-open: '\f518',
+  /* fa-book-open */ $fa-style: 'solid'
+) {
+  @include base-box;
+  border-left: 0.25rem solid $border-color;
+  padding: 0; /* header handles its own padding */
+  color: var(--text-color);
+
+  /* -- Summary (clickable header) ----------------------------------------- */
+  > summary {
+    cursor: pointer;
+    list-style: none; /* hide native marker */
+    position: relative;
+    padding: 0.55rem 3rem 0.55rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: $bg-color;
+    line-height: 1.15;
+    user-select: none;
+    color: $accent-color;
+
+    /* remove built‑in ▸/▾ markers */
+    &::-webkit-details-marker,
+    &::marker {
+      display: none;
+    }
+
+    /* LEFT icon – swaps on open */
+    &::before {
+      content: $icon-closed;
+      font: var(--fa-font-#{$fa-style});
+      color: $accent-color;
+      line-height: 1;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      flex-shrink: 0;
+    }
+
+    /* RIGHT chevron – rotates on open */
+    &::after {
+      content: '\f105'; /* fa-angle-right */
+      font: var(--fa-font-solid);
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: transform 0.2s ease;
+      color: $accent-color;
+      line-height: 1;
+    }
+
+    > p {
+      margin: 0;
+    }
+  }
+
+  /* -- Open state adjustments -------------------------------------------- */
+  &[open] > summary {
+    &::after {
+      transform: translateY(-50%) rotate(90deg);
+    }
+    &::before {
+      content: $icon-open;
+      animation: bop 0.18s ease-out;
+    }
+  }
+
+  /* -- Content area ------------------------------------------------------- */
+  > :not(summary) {
+    padding: 0.6rem 1rem;
+    color: var(--text-color);
+  }
+}
+
+/* Bounce keyframes for the icon */
+@keyframes bop {
+  50% {
+    transform: scale(1.12);
+  }
+}

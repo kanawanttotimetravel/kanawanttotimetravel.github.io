@@ -1,0 +1,101 @@
+
+@use '../abstracts/mathmixins' as math;
+
+.box-definition {
+  @include math.math-box(
+    #2563eb,
+    #2563eb,
+    rgba(#2563eb, 0.08),
+    '\f02e',
+    'Definition'
+  );
+}
+.box-lemma {
+  @include math.math-box(#16a34a, #16a34a, rgba(#16a34a, 0.08), '\f022', 'Lemma');
+}
+.box-proposition {
+  @include math.math-box(
+    #eab308,
+    #eab308,
+    rgba(#eab308, 0.08),
+    '\f0eb',
+    'Proposition'
+  );
+}
+.box-theorem {
+  @include math.math-box(#dc2626, #dc2626, rgba(#dc2626, 0.08), '\f091', 'Theorem');
+}
+.box-example {
+  @include math.math-box(#8b5cf6, #8b5cf6, rgba(#8b5cf6, 0.08), '\f0eb', 'Example');
+}
+
+/* Details Box – inherits palette from CSS custom properties */
+details.details-block {
+  @include math.details-box(
+    var(--prompt-tip-icon-color),
+    var(--prompt-tip-icon-color),
+    var(--prompt-tip-bg)
+  );
+
+  > summary {
+    color: #4ade80; /* medium lighter green for balanced contrast */
+  }
+}
+
+/* ===========================================================================
+   * DARK THEME OVERRIDES
+   * =========================================================================== */
+@media (prefers-color-scheme: dark) {
+  /* Update CSS custom properties for standard boxes */
+  :root {
+    --prompt-info-icon-color: #38bdf8;
+    --prompt-info-bg: rgba(56, 189, 248, 0.1);
+    --prompt-tip-icon-color: #4ade80;
+    --prompt-tip-bg: rgba(74, 222, 128, 0.12);
+    --prompt-warning-icon-color: #facc15;
+    --prompt-warning-bg: rgba(250, 204, 21, 0.1);
+    --prompt-danger-icon-color: #f87171;
+    --prompt-danger-bg: rgba(248, 113, 113, 0.1);
+  }
+
+  /* Math boxes with improved dark‑mode contrast */
+  .box-definition {
+    @include math.math-box(
+      #1e40af,
+      #60a5fa,
+      rgba(#2563eb, 0.08),
+      '\f02e',
+      'Definition'
+    );
+  }
+  .box-theorem {
+    @include math.math-box(
+      #991b1b,
+      #f87171,
+      rgba(#dc2626, 0.08),
+      '\f091',
+      'Theorem'
+    );
+  }
+  .box-example {
+    @include math.math-box(
+      #6d28d9,
+      #a78bfa,
+      rgba(#7d48f8, 0.08),
+      '\f0eb',
+      'Example'
+    );
+  }
+  .box-lemma {
+    @include math.math-box(#15803d, #4ade80, rgba(#16a34a, 0.08), '\f022', 'Lemma');
+  }
+  .box-proposition {
+    @include math.math-box(
+      #a16207,
+      #fbbf24,
+      rgba(#eab308, 0.08),
+      '\f0eb',
+      'Proposition'
+    );
+  }
+}
